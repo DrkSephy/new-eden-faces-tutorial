@@ -23,6 +23,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
+// while on the server a rendered HTML markup is sent to the index.html template where
+// it is inserted into <div id="app">{{html|safe}}</div> by the Swig template engine.
 app.use(function(req, res) {
 	Router.match({ routes: routes.default, location: req.url }, function(err, redirectLocation, renderProps) {
 		if (err) {
@@ -32,6 +36,7 @@ app.use(function(req, res) {
 		} else if (renderProps) {
 			var html = ReactDOM.renderToString(React.createElement(Router.RoutingContext, renderProps));
 			var page = swig.renderFile('views/index.html', { html: html });
+			res.status(200).send(page);
 		} else {
 			res.status(404).send('Page Not Found');
 		}
