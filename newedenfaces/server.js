@@ -1,3 +1,15 @@
+// Babel ES6/JSX Compiler
+require('babel-register');
+
+// React stuff
+var swig = require('swig');
+var React = require('react');
+// React.renderToString now lives in the react-dom/server package
+var ReactDOM = require('react-dom/server');
+var Router = require('react-router');
+var routes = require('./app/routes')
+
+// Node stuff
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
