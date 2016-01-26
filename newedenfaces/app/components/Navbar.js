@@ -4,57 +4,58 @@ import NavbarStore from '../stores/NavbarStore';
 import NavbarActions from '../actions/NavbarActions';
 
 class Navbar extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = NavbarStore.getState();
-		this.onChange = this.onChange.bind(this);
-	}
+  constructor(props) {
+    super(props);
+    this.state = NavbarStore.getState();
+    this.onChange = this.onChange.bind(this);
+  }
 
-	componentDidMount() {
-		NavbarStore.listen(this.onChange);
-		NavbarStore.getCharacterCount();
+  componentDidMount() {
+    NavbarStore.listen(this.onChange);
+    NavbarActions.getCharacterCount();
 
-		let socket = io.connect();
-		socket.on('onlineUsers', (data) => {
-			NavbarActions.updateOnlineUsers(data);
-		});
+    let socket = io.connect();
 
-		$(document).ajaxStart(() => {
-			NavbarActions.updateAjaxAnimation('fadeIn');
-		});
+    socket.on('onlineUsers', (data) => {
+      NavbarActions.updateOnlineUsers(data);
+    });
 
-		$(document).ajaxComplete(() => {
-			setTimeout(() => {
-				NavbarActions.updateAjaxAnimation('fadeOut');
-			}, 750);
-		});
-	}
+    $(document).ajaxStart(() => {
+      NavbarActions.updateAjaxAnimation('fadeIn');
+    });
 
-	componentWillUnmount() {
-		NavbarStore.unlisten(this.onChange);
-	}
+    $(document).ajaxComplete(() => {
+      setTimeout(() => {
+        NavbarActions.updateAjaxAnimation('fadeOut');
+      }, 750);
+    });
+  }
 
-	onChange(state) {
-		this.setState(state);
-	}
+  componentWillUnmount() {
+    NavbarStore.unlisten(this.onChange);
+  }
 
-	handleSubmit(event) {
-		event.preventDefault();
+  onChange(state) {
+    this.setState(state);
+  }
 
-		let searchQuery = this.state.searchQuery.trim();
+  handleSubmit(event) {
+    event.preventDefault();
 
-		if(searchQuery) {
-			NavbarActions.findCharacter({
-				searchQuery: searchQuery,
-				searchForm: this.refs.searchForm,
-				history: this.props.history
-			});
-		}
-	}
+    let searchQuery = this.state.searchQuery.trim();
 
-	render() {
-		return (
-			<nav className='navbar navbar-default navbar-static-top'>
+    if (searchQuery) {
+      NavbarActions.findCharacter({
+        searchQuery: searchQuery,
+        searchForm: this.refs.searchForm,
+        history: this.props.history
+      });
+    }
+  }
+
+  render() {
+    return (
+      <nav className='navbar navbar-default navbar-static-top'>
         <div className='navbar-header'>
           <button type='button' className='navbar-toggle collapsed' data-toggle='collapse' data-target='#navbar'>
             <span className='sr-only'>Toggle navigation</span>
@@ -210,6 +211,8 @@ class Navbar extends React.Component {
           </ul>
         </div>
       </nav>
-		)
-	}
+    );
+  }
 }
+
+export default Navbar;
