@@ -45,7 +45,7 @@ class Footer extends React.Component {
 							<p>Copyright 2015 Sahat Yalkabov. </p>
 						</div>
 						<div className='col-sm-7 hidden-xs'>
-							<h3 className='lead'><strong>Leaderboard></strong> Top 5 Characters</h3>
+							<h3 className='lead'><strong>Leaderboard</strong> Top 5 Characters</h3>
 							<ul className='list-inline'>
 								{leaderboardCharacters}
 							</ul>

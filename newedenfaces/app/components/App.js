@@ -1,4 +1,5 @@
 import React from 'react';
+import Footer from './Footer';
 
 // this.props.children will render one of the following
 // components depending on the URL path:
@@ -12,6 +13,7 @@ class App extends React.Component {
 		return (
 			<div>
 				{this.props.children}
+				<Footer />
 			</div>
 		);
 	}
