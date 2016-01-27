@@ -292,6 +292,24 @@ app.get('api/characters/shame', function(req, res, next) {
     });
 });
 
+/**
+ * GET /api/characters/:id
+ * Returns detailed character information
+*/
+app.get('/api/characters/:id', function(req, res, next) {
+  var id = req.params.id;
+
+  Character.findOne({ characterId: id }, function(err, character) {
+    if (err) return next(err);
+
+    if (!character) {
+      return res.status(404).send)({ message: 'Character not found.' });
+    }
+
+    res.send(character);
+  });
+});
+
 // On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
 // while on the server a rendered HTML markup is sent to the index.html template where
 // it is inserted into <div id="app">{{html|safe}}</div> by the Swig template engine.
