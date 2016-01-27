@@ -247,6 +247,36 @@ app.get('/api/characters/search', function(req, res, next) {
   });
 });
 
+/**
+ * GET /api/characters/top
+ * Return 100 highest ranked character. Filter by gender, race and bloodline.
+*/
+app.get('/api/characters/top', function(req, res, next) {
+  var params = req.query;
+  var conditions = {};
+
+  _.each(params, function(value, key) {
+    conditions[key] = new RegExp('^' + value + '$', 'i');
+  });
+
+  Character
+    .find(conditions)
+    .sort('-wins') // Sort in descending order (highest wins on top)
+    .limit(100)
+    .exec(function(err, characters) {
+      if (err) return next(err);
+
+      // Sort by winning percentage
+      characters.sort(function(a, b) {
+        if (a.wins / (a.wins + a.losses) < b.wins / (b.wins + b.losses)) { return 1; }
+        if (a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)) { return -1; }
+        return 0;
+      });
+
+      res.send(characters);
+    });
+});
+
 // On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
 // while on the server a rendered HTML markup is sent to the index.html template where
 // it is inserted into <div id="app">{{html|safe}}</div> by the Swig template engine.
