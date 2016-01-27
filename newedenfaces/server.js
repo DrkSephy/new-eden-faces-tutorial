@@ -17,6 +17,7 @@ var bodyParser = require('body-parser');
 var async = require('async');
 var request = require('request');
 var xml2js = require('xml2js');
+var _ = require('underscore');
 
 // MongoDB and models
 var mongoose = require('mongoose');
@@ -104,6 +105,48 @@ app.post('/api/characters', function(req, res, next) {
       });
     }
   ]);
+});
+
+
+/**
+ * GET /api/characters
+ * Returns 2 random characters of the same gender that have not been voted yet.
+*/
+app.get('/api/characters', function(req, res, next) {
+  var choices = ['Female', 'Male'];
+  var randomGender = _.sample(choices);
+
+  Character.find({random: { $near: [Math.random(), 0]}})
+    .where('voted', false)
+    .where('gender', randomGender)
+    .limit(2)
+    .exec(function(err, characters) {
+      if(err) return next(err);
+
+      if(characters.length === 2) {
+        return res.send(characters);
+      }
+
+      var oppositeGender = _.first(_.without(choices, randomGender));
+
+      Character
+        .find({ random: { $near: [Math.random(), 0]}})
+        .where('voted', false)
+        .where('gender', oppositeGender)
+        .limit(2)
+        .exec(function(err, characters) {
+          if (err) return next(err);
+
+          if (characters.length === 2) {
+            return res.send(characters);
+          }
+
+          Character.update({}, { $set: { voted: false } }, {multi: true }, function(err) {
+            if (err) return next(err);
+            res.send([]);
+          });
+        });
+    })
 });
 
 // On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
