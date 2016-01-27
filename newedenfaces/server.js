@@ -229,6 +229,24 @@ app.get('/api/characters/count', function(req, res, next) {
   });
 });
 
+/**
+ * GET api/characters/search
+ * Looks up a character by name. (case-insensitive)
+*/
+app.get('/api/characters/search', function(req, res, next) {
+  var characterName = new RegExp(req.query.name, 'i');
+
+  Character.findOne({ name: characterName }, function(err, character) {
+    if (err) return next(err);
+
+    if (!character) {
+      return res.status(404).send({ message: 'Character not found.' });
+    }
+
+    res.send(character);
+  });
+});
+
 // On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
 // while on the server a rendered HTML markup is sent to the index.html template where
 // it is inserted into <div id="app">{{html|safe}}</div> by the Swig template engine.
