@@ -277,6 +277,21 @@ app.get('/api/characters/top', function(req, res, next) {
     });
 });
 
+/** 
+ * GET /api/characters/shame
+ * Returns 100 lowest ranked characters 
+*/
+app.get('api/characters/shame', function(req, res, next) {
+  Character
+    .find()
+    .sort('-losses')
+    .limit(100)
+    .exec(function(err, characters) {
+      if (err) return next(err);
+      res.send(characters);
+    });
+});
+
 // On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
 // while on the server a rendered HTML markup is sent to the index.html template where
 // it is inserted into <div id="app">{{html|safe}}</div> by the Swig template engine.
