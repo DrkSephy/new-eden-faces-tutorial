@@ -310,6 +310,13 @@ app.get('/api/characters/:id', function(req, res, next) {
   });
 });
 
+/**
+ * POST /api/report
+ * Reports a character, which is removed after 4 attempts
+*/
+
+
+
 // On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
 // while on the server a rendered HTML markup is sent to the index.html template where
 // it is inserted into <div id="app">{{html|safe}}</div> by the Swig template engine.
