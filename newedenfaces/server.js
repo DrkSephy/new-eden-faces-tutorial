@@ -15,6 +15,16 @@ var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
+// MongoDB and models
+var mongoose = require('mongoose');
+var config = require('./config');
+var Character = require('./models/character');
+
+mongoose.connect(config.database);
+mongoose.connection.on('error', function() {
+	console.info('Error: Could not connect to MongoDB');
+});
+
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
