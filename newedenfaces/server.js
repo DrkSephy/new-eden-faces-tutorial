@@ -149,6 +149,75 @@ app.get('/api/characters', function(req, res, next) {
     })
 });
 
+
+/**
+ * PUT /api/characters
+ * Update winning and losing count for both characters.
+*/
+app.put('/api/characters', function(req, res, next) {
+  var winner = req.body.winner;
+  var loser = req.body.loser;
+
+  if (!winner || !loser) {
+    return res.status(400).send({ message: 'Voting requires two characters' });
+  }
+
+  if (winner === loser) {
+    return res.status(400).send({ message: 'Cannot vote for and against the same characters' });
+  }
+
+  async.parallel([
+    function(callback) {
+      Character.findOne({ characterId: winner }, function(err, winner) {
+        callback(err, winner);
+      });
+    }, 
+    function(callback) {
+      Character.findOne({ characterId: loser }, function(err, loser) {
+        callback(err, loser);
+      });
+    }
+  ],
+  function(err, results) {
+    if (err) return next(err);
+
+    var winner = results[0];
+    var loser  = results[1];
+
+    if (!winner || !loser) {
+      return res.status(404).send({ message: 'One of the characters no longer exists' });
+    }
+
+    if (winner.voted || loser.voted) {
+      return res.status(200).end();
+    }
+
+    async.parallel([
+      function(callback) {
+        winner.wins++;
+        winner.voted = true;
+        winner.random = [Math.random(), 0];
+        winner.save(function(err) {
+          callback(err);
+        });
+      }, 
+      function(callback) {
+        loser.losses++;
+        loser.voted = true;
+        loser.random = [Math.random(), 0];
+        loser.save(function(err) {
+          callback(err);
+        });
+      }
+    ], function(err) {
+      if (err) return next(err);
+      res.status(200).end();
+    });
+  }
+
+  );
+});
+
 // On the client-side, a rendered HTML markup gets inserted into <div id="app"></div>
 // while on the server a rendered HTML markup is sent to the index.html template where
 // it is inserted into <div id="app">{{html|safe}}</div> by the Swig template engine.
