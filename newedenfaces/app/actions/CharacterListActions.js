@@ -28,7 +28,7 @@ class CharacterListActions {
 		$.ajax({ url: url, data: params })
 			.done((data) => {
 				this.actions.getCharactersSuccess(data);
-			});
+			})
 			.fail((jqXhr) => {
 				this.actions.getCharactersFail(jqXhr);
 			});
